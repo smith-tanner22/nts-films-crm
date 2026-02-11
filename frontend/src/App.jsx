@@ -66,7 +66,6 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/inquiry" element={<InquiryForm />} />
         <Route path="/questionnaire/:token" element={<PublicQuestionnaire />} />
 

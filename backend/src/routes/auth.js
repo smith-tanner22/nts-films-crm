@@ -19,57 +19,60 @@ const validate = (validations) => {
   };
 };
 
-// Register new user (client)
-router.post('/register', validate([
-  body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 }),
-  body('name').notEmpty().trim()
-]), async (req, res) => {
-  try {
-    const { email, password, name, phone } = req.body;
-
-    // Check if user exists
-    const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email already registered' });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    const userId = uuidv4();
-    db.prepare(`
-      INSERT INTO users (id, email, password, name, phone, role)
-      VALUES (?, ?, ?, ?, ?, 'client')
-    `).run(userId, email, hashedPassword, name, phone || null);
-
-    // Create client profile
-    db.prepare(`
-      INSERT INTO client_profiles (id, user_id)
-      VALUES (?, ?)
-    `).run(uuidv4(), userId);
-
-    // Generate token
-    const token = jwt.sign(
-      { userId, email, role: 'client' },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
-
-    // Update last login
-    db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').run(userId);
-
-    res.status(201).json({
-      message: 'Registration successful',
-      token,
-      user: { id: userId, email, name, role: 'client' }
-    });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Registration failed' });
-  }
+  router.post('/register', (req, res) => {
+  return res.status(403).json({ error: 'Registration is disabled' });
 });
+// Register new user (client)
+// router.post('/register', validate([
+//   body('email').isEmail().normalizeEmail(),
+//   body('password').isLength({ min: 6 }),
+//   body('name').notEmpty().trim()
+// ]), async (req, res) => {
+//   try {
+//     const { email, password, name, phone } = req.body;
+
+//     // Check if user exists
+//     const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+//     if (existingUser) {
+//       return res.status(400).json({ error: 'Email already registered' });
+//     }
+
+//     // Hash password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // Create user
+//     const userId = uuidv4();
+//     db.prepare(`
+//       INSERT INTO users (id, email, password, name, phone, role)
+//       VALUES (?, ?, ?, ?, ?, 'client')
+//     `).run(userId, email, hashedPassword, name, phone || null);
+
+//     // Create client profile
+//     db.prepare(`
+//       INSERT INTO client_profiles (id, user_id)
+//       VALUES (?, ?)
+//     `).run(uuidv4(), userId);
+
+//     // Generate token
+//     const token = jwt.sign(
+//       { userId, email, role: 'client' },
+//       process.env.JWT_SECRET,
+//       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+//     );
+
+//     // Update last login
+//     db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').run(userId);
+
+//     res.status(201).json({
+//       message: 'Registration successful',
+//       token,
+//       user: { id: userId, email, name, role: 'client' }
+//     });
+//   } catch (error) {
+//     console.error('Registration error:', error);
+//     res.status(500).json({ error: 'Registration failed' });
+//   }
+// });
 
 // Login
 router.post('/login', validate([
