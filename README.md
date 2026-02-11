@@ -42,8 +42,8 @@ A full-featured CRM and client portal for videography businesses. Built with Rea
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/framecraft.git
-cd framecraft
+git clone https://github.com/yourusername/ntsfilms.git
+cd ntsfilms
 ```
 
 2. **Install backend dependencies**
@@ -84,13 +84,13 @@ npm run dev
 - API: http://localhost:5000
 
 ### Demo Credentials
-- **Admin**: admin@framecraft.com / admin123
+- **Admin**: admin@ntsfilms.com / admin123
 - **Client**: emily@example.com / client123
 
 ## Project Structure
 
 ```
-framecraft/
+ntsfilms/
 ├── backend/
 │   ├── src/
 │   │   ├── db/
@@ -209,8 +209,8 @@ sudo apt-get install -y nodejs
 
 2. **Clone and setup**
 ```bash
-git clone https://github.com/yourusername/framecraft.git
-cd framecraft/backend
+git clone https://github.com/yourusername/ntsfilms.git
+cd ntsfilms/backend
 npm install --production
 cp .env.example .env
 # Edit .env with production values
@@ -228,7 +228,7 @@ npm run build
 ```bash
 npm install -g pm2
 cd ../backend
-pm2 start src/index.js --name framecraft
+pm2 start src/index.js --name ntsfilms
 pm2 save
 pm2 startup
 ```
@@ -253,7 +253,7 @@ server {
     }
 
     location / {
-        root /var/www/framecraft/frontend/dist;
+        root /var/www/ntsfilms/frontend/dist;
         try_files $uri $uri/ /index.html;
     }
 }
@@ -308,4 +308,4 @@ MIT License - feel free to use for personal or commercial projects.
 
 ## Support
 
-For questions or issues, please open a GitHub issue or contact support@framecraft.com
+For questions or issues, please open a GitHub issue or contact support@ntsfilms.com
