@@ -155,15 +155,7 @@ export default function Login() {
           </p>
 
           {/* Demo credentials */}
-          <div className="mt-8 p-4 bg-dark-900 rounded-xl border border-dark-800">
-            <p className="text-xs text-dark-500 uppercase tracking-wider mb-2">Demo Credentials</p>
-            <p className="text-sm text-dark-300">
-              <span className="text-dark-500">Admin:</span> admin@ntsfilms.com / admin123
-            </p>
-            <p className="text-sm text-dark-300">
-              <span className="text-dark-500">Client:</span> emily@example.com / client123
-            </p>
-          </div>
+          
         </div>
       </div>
     </div>
