@@ -24,8 +24,8 @@ import Invoices from './pages/invoices/Invoices';
 import Questionnaires from './pages/questionnaires/Questionnaires';
 import Insights from './pages/insights/Insights';
 
-// Placeholder pages (still needed for settings)
-import { SettingsPage } from './pages/placeholders';
+// Setting Page
+import Settings from './pages/settings/Settings';
 
 // Public pages
 import InquiryForm from './pages/public/InquiryForm';
@@ -122,7 +122,7 @@ function App() {
           <Route path="questionnaires" element={<Questionnaires />} />
           <Route path="invoices" element={<Invoices />} />
           <Route path="invoices/:id" element={<Invoices />} />
-          <Route path="settings" element={<SettingsPage />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         {/* Catch all */}

@@ -260,4 +260,87 @@ router.post('/forgot-password', validate([
   }
 });
 
+// Update user profile
+router.put('/profile', (req, res) => {
+  try {
+    const { name, email, phone } = req.body;
+    
+    // Check if email is already taken by another user
+    if (email && email !== req.user.email) {
+      const existing = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, req.user.id);
+      if (existing) {
+        return res.status(400).json({ error: 'Email already in use' });
+      }
+    }
+
+    db.prepare(`
+      UPDATE users SET
+        name = COALESCE(?, name),
+        email = COALESCE(?, email),
+        phone = COALESCE(?, phone),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(name, email, phone, req.user.id);
+
+    const user = db.prepare('SELECT id, name, email, phone, role FROM users WHERE id = ?').get(req.user.id);
+    res.json({ message: 'Profile updated', user });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Change password
+router.post('/change-password', async (req, res) => {
+  try {
+    const { current_password, new_password } = req.body;
+
+    if (!current_password || !new_password) {
+      return res.status(400).json({ error: 'Current and new password are required' });
+    }
+
+    if (new_password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    const user = db.prepare('SELECT password FROM users WHERE id = ?').get(req.user.id);
+    
+    const bcrypt = require('bcryptjs');
+    const isValid = await bcrypt.compare(current_password, user.password);
+    
+    if (!isValid) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    db.prepare('UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+      .run(hashedPassword, req.user.id);
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
+// Update notification settings
+router.put('/notifications', (req, res) => {
+  try {
+    const settings = req.body;
+    
+    // Store notification settings in user preferences (as JSON)
+    db.prepare(`
+      UPDATE users SET
+        notification_settings = ?,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(JSON.stringify(settings), req.user.id);
+
+    res.json({ message: 'Notification preferences saved', settings });
+  } catch (error) {
+    console.error('Update notifications error:', error);
+    res.status(500).json({ error: 'Failed to update notification preferences' });
+  }
+});
+
 module.exports = router;

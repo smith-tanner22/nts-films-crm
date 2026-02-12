@@ -15,6 +15,7 @@ const calendarRoutes = require('./routes/calendar');
 const insightsRoutes = require('./routes/insights');
 const uploadRoutes = require('./routes/uploads');
 const publicRoutes = require('./routes/public');
+const settingsRoutes = require('./routes/settings');
 
 // Import middleware
 const { authenticateToken, isAdmin } = require('./middleware/auth');
@@ -50,6 +51,7 @@ app.use('/api/invoices', authenticateToken, invoiceRoutes);
 app.use('/api/calendar', authenticateToken, calendarRoutes);
 app.use('/api/insights', authenticateToken, isAdmin, insightsRoutes);
 app.use('/api/uploads', authenticateToken, uploadRoutes);
+app.use('/api/settings', authMiddleware, settingsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

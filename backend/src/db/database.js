@@ -232,6 +232,25 @@ const initDatabase = () => {
     )
   `);
 
+  // Business settings table
+db.exec(`
+  CREATE TABLE IF NOT EXISTS business_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_name TEXT DEFAULT 'NTS Films',
+    company_email TEXT,
+    company_phone TEXT,
+    company_address TEXT,
+    company_city TEXT,
+    company_state TEXT,
+    company_zip TEXT,
+    tax_rate REAL DEFAULT 0,
+    payment_terms TEXT DEFAULT 'Net 30',
+    invoice_footer TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
   // Activity log for tracking changes
   db.exec(`
     CREATE TABLE IF NOT EXISTS activity_log (
