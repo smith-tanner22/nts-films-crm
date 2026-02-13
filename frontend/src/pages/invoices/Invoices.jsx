@@ -42,6 +42,7 @@ export default function Invoices() {
     project_id: '',
     due_date: '',
     notes: '',
+    status: 'draft',
     items: [{ description: '', quantity: 1, rate: 0 }],
   });
 
@@ -101,6 +102,7 @@ export default function Invoices() {
       project_id: searchParams.get('project') || '',
       due_date: format(dueDate, 'yyyy-MM-dd'),
       notes: '',
+      status: 'draft',
       items: [{ description: '', quantity: 1, rate: 0 }],
     });
     setShowModal(true);
@@ -114,7 +116,8 @@ export default function Invoices() {
       project_id: invoice.project_id || '',
       due_date: invoice.due_date,
       notes: invoice.notes || '',
-      items: invoice.items ? JSON.parse(invoice.items) : [{ description: '', quantity: 1, rate: 0 }],
+      status: invoice.status || 'draft',
+      items: Array.isArray(invoice.items) ? invoice.items : (typeof invoice.items === 'string' ? JSON.parse(invoice.items) : [{ description: '', quantity: 1, rate: 0 }]),
     });
     setShowModal(true);
     setOpenMenuId(null);
@@ -169,6 +172,7 @@ export default function Invoices() {
       project_id: formData.project_id || null,
       due_date: formData.due_date,
       notes: formData.notes,
+      status: formData.status,
       items: preparedItems, // Send as array, backend handles both
       subtotal: totals.subtotal,
       tax_rate: 0,
@@ -465,7 +469,7 @@ export default function Invoices() {
         size="xl"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-dark-300 mb-2">Client *</label>
               <select
@@ -504,6 +508,18 @@ export default function Invoices() {
                 required
                 className="w-full"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-dark-300 mb-2">Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
+                className="w-full"
+              >
+                {statusOptions.filter(s => s.value !== 'cancelled').map(status => (
+                  <option key={status.value} value={status.value}>{status.label}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -656,7 +672,7 @@ export default function Invoices() {
                   </tr>
                 </thead>
                 <tbody>
-                  {JSON.parse(showViewModal.items || '[]').map((item, index) => (
+                  {(typeof showViewModal.items === 'string' ? JSON.parse(showViewModal.items) : (showViewModal.items || [])).map((item, index) => (
                     <tr key={index} className="border-t border-dark-700">
                       <td className="px-4 py-3 text-white">{item.description}</td>
                       <td className="px-4 py-3 text-right text-dark-300">{item.quantity}</td>
