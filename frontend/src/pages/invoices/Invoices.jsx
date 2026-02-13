@@ -331,205 +331,122 @@ export default function Invoices() {
 
         {/* Invoices List */}
 {invoices.length > 0 ? (
-  <>
-    {/* Desktop Table View */}
-    <div className="hidden md:block card overflow-visible">
-      <div className="overflow-x-auto">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Invoice</th>
-              <th>Client</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Due Date</th>
-              <th className="w-12"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoices.map((invoice) => (
-              <tr key={invoice.id}>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-dark-800 flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-dark-400" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-white">{invoice.invoice_number}</p>
-                      {invoice.project_title && (
-                        <p className="text-sm text-dark-400">{invoice.project_title}</p>
-                      )}
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex items-center gap-2">
-                    <Avatar name={invoice.client_name} size="sm" />
-                    <span className="text-dark-200">{invoice.client_name}</span>
-                  </div>
-                </td>
-                <td className="font-semibold text-white">
-                  ${invoice.total?.toLocaleString()}
-                </td>
-                <td>
-                  <span className={clsx(
-                    'px-2 py-1 rounded text-xs font-medium',
-                    statusOptions.find(s => s.value === invoice.status)?.color,
-                    'text-white'
-                  )}>
-                    {statusOptions.find(s => s.value === invoice.status)?.label}
-                  </span>
-                </td>
-                <td className="text-dark-400">
-                  {invoice.due_date && format(parseISO(invoice.due_date), 'MMM d, yyyy')}
-                </td>
-                <td>
-                  <div className="relative">
-                    <button
-                      onClick={() => setOpenMenuId(openMenuId === invoice.id ? null : invoice.id)}
-                      className="p-2 hover:bg-dark-800 rounded-lg"
-                    >
-                      <MoreVertical className="w-4 h-4 text-dark-400" />
-                    </button>
-                    
-                    {openMenuId === invoice.id && (
-                      <>
-                        <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                        <div className="absolute right-0 bottom-full mb-1 w-48 bg-dark-800 border border-dark-700 rounded-xl shadow-xl z-50 py-1">
-                          <button
-                            onClick={() => { setShowViewModal(invoice); setOpenMenuId(null); }}
-                            className="w-full px-4 py-2 text-left text-sm text-dark-200 hover:bg-dark-700 flex items-center gap-2"
-                          >
-                            <Eye className="w-4 h-4" />
-                            View
-                          </button>
-                          {isAdmin() && (
-                            <>
-                              <button
-                                onClick={() => openEditModal(invoice)}
-                                className="w-full px-4 py-2 text-left text-sm text-dark-200 hover:bg-dark-700 flex items-center gap-2"
-                              >
-                                <Edit className="w-4 h-4" />
-                                Edit
-                              </button>
-                              {invoice.status === 'draft' && (
-                                <button
-                                  onClick={() => handleSend(invoice)}
-                                  className="w-full px-4 py-2 text-left text-sm text-blue-400 hover:bg-dark-700 flex items-center gap-2"
-                                >
-                                  <Send className="w-4 h-4" />
-                                  Send Invoice
-                                </button>
-                              )}
-                              {['sent', 'viewed', 'overdue'].includes(invoice.status) && (
-                                <button
-                                  onClick={() => handleMarkPaid(invoice)}
-                                  className="w-full px-4 py-2 text-left text-sm text-green-400 hover:bg-dark-700 flex items-center gap-2"
-                                >
-                                  <CheckCircle className="w-4 h-4" />
-                                  Mark as Paid
-                                </button>
-                              )}
-                              <button
-                                onClick={() => { setDeleteConfirm(invoice); setOpenMenuId(null); }}
-                                className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-dark-700 flex items-center gap-2"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Delete
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    {/* Mobile Card View */}
-    <div className="md:hidden space-y-3">
-      {invoices.map((invoice) => (
-        <div key={invoice.id} className="card p-4">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-dark-800 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-dark-400" />
-              </div>
-              <div>
-                <p className="font-medium text-white">{invoice.invoice_number}</p>
-                <p className="text-sm text-dark-400">{invoice.client_name}</p>
-              </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    {invoices.map((invoice) => (
+      <div key={invoice.id} className="card-hover p-5">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-dark-800 flex items-center justify-center">
+              <FileText className="w-5 h-5 text-dark-400" />
             </div>
-            <span className={clsx(
-              'px-2 py-1 rounded text-xs font-medium',
-              statusOptions.find(s => s.value === invoice.status)?.color,
-              'text-white'
-            )}>
-              {statusOptions.find(s => s.value === invoice.status)?.label}
-            </span>
+            <div>
+              <p className="font-semibold text-white">{invoice.invoice_number}</p>
+              <p className="text-sm text-dark-400">{invoice.client_name}</p>
+            </div>
           </div>
           
-          <div className="flex items-center justify-between text-sm mb-3">
-            <span className="text-dark-400">Amount</span>
-            <span className="font-semibold text-white">${invoice.total?.toLocaleString()}</span>
-          </div>
-          
-          <div className="flex items-center justify-between text-sm mb-4">
-            <span className="text-dark-400">Due Date</span>
-            <span className="text-dark-200">
-              {invoice.due_date && format(parseISO(invoice.due_date), 'MMM d, yyyy')}
-            </span>
-          </div>
-          
-          <div className="flex gap-2 pt-3 border-t border-dark-700">
-            <button
-              onClick={() => setShowViewModal(invoice)}
-              className="flex-1 btn-secondary btn-sm"
-            >
-              <Eye className="w-4 h-4" />
-              View
-            </button>
-            {isAdmin() && (
+          {isAdmin() && (
+            <div className="relative">
               <button
-                onClick={() => openEditModal(invoice)}
-                className="flex-1 btn-secondary btn-sm"
+                onClick={() => setOpenMenuId(openMenuId === invoice.id ? null : invoice.id)}
+                className="p-1 hover:bg-dark-800 rounded"
               >
-                <Edit className="w-4 h-4" />
-                Edit
+                <MoreVertical className="w-4 h-4 text-dark-400" />
               </button>
-            )}
-            {isAdmin() && ['sent', 'viewed', 'overdue'].includes(invoice.status) && (
-              <button
-                onClick={() => handleMarkPaid(invoice)}
-                className="flex-1 btn-primary btn-sm"
-              >
-                <CheckCircle className="w-4 h-4" />
-                Paid
-              </button>
-            )}
-          </div>
+              
+              {openMenuId === invoice.id && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                  <div className="absolute right-0 mt-1 w-40 bg-dark-800 border border-dark-700 rounded-lg shadow-xl z-20 py-1">
+                    <button
+                      onClick={() => { setShowViewModal(invoice); setOpenMenuId(null); }}
+                      className="w-full px-3 py-2 text-left text-sm text-dark-200 hover:bg-dark-700 flex items-center gap-2"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View
+                    </button>
+                    <button
+                      onClick={() => openEditModal(invoice)}
+                      className="w-full px-3 py-2 text-left text-sm text-dark-200 hover:bg-dark-700 flex items-center gap-2"
+                    >
+                      <Edit className="w-4 h-4" />
+                      Edit
+                    </button>
+                    {invoice.status === 'draft' && (
+                      <button
+                        onClick={() => handleSend(invoice)}
+                        className="w-full px-3 py-2 text-left text-sm text-blue-400 hover:bg-dark-700 flex items-center gap-2"
+                      >
+                        <Send className="w-4 h-4" />
+                        Send
+                      </button>
+                    )}
+                    {['sent', 'viewed', 'overdue'].includes(invoice.status) && (
+                      <button
+                        onClick={() => handleMarkPaid(invoice)}
+                        className="w-full px-3 py-2 text-left text-sm text-green-400 hover:bg-dark-700 flex items-center gap-2"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        Mark Paid
+                      </button>
+                    )}
+                    <button
+                      onClick={() => { setDeleteConfirm(invoice); setOpenMenuId(null); }}
+                      className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-dark-700 flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
-      ))}
-    </div>
-  </>
-) : (
-          <EmptyState
-            icon={Receipt}
-            title="No invoices found"
-            description={isAdmin() ? "Create your first invoice to get started" : "Your invoices will appear here"}
-            action={isAdmin() && (
-              <button onClick={openNewModal} className="btn-primary">
-                <Plus className="w-5 h-5" />
-                New Invoice
-              </button>
-            )}
-          />
+
+        {invoice.project_title && (
+          <p className="text-sm text-dark-500 mb-3">{invoice.project_title}</p>
         )}
+
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-2xl font-bold text-white">${invoice.total?.toLocaleString()}</span>
+          <span className={clsx(
+            'px-2 py-1 rounded text-xs font-medium',
+            statusOptions.find(s => s.value === invoice.status)?.color,
+            'text-white'
+          )}>
+            {statusOptions.find(s => s.value === invoice.status)?.label}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between text-sm text-dark-400 pt-3 border-t border-dark-700">
+          <span className="flex items-center gap-1">
+            <Clock className="w-4 h-4" />
+            Due {invoice.due_date && format(parseISO(invoice.due_date), 'MMM d, yyyy')}
+          </span>
+          <button
+            onClick={() => setShowViewModal(invoice)}
+            className="text-brand-400 hover:text-brand-300"
+          >
+            View Details
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+) : (
+  <EmptyState
+    icon={Receipt}
+    title="No invoices found"
+    description={isAdmin() ? "Create your first invoice to get started" : "Your invoices will appear here"}
+    action={isAdmin() && (
+      <button onClick={openNewModal} className="btn-primary">
+        <Plus className="w-5 h-5" />
+        New Invoice
+      </button>
+    )}
+  />
+)}
       </div>
 
       {/* Create/Edit Invoice Modal */}

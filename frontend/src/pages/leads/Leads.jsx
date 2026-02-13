@@ -236,130 +236,111 @@ export default function Leads() {
         </div>
 
         {/* Leads list */}
-        {leads.length > 0 ? (
-          <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Lead</th>
-                    <th>Service</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th className="w-12"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leads.map((lead) => (
-                    <tr key={lead.id}>
-                      <td>
-                        <div className="flex items-center gap-3">
-                          <Avatar name={lead.name} />
-                          <div>
-                            <p className="font-medium text-white">{lead.name}</p>
-                            <div className="flex items-center gap-3 text-sm text-dark-400">
-                              <span className="flex items-center gap-1">
-                                <Mail className="w-3 h-3" />
-                                {lead.email}
-                              </span>
-                              {lead.phone && (
-                                <span className="flex items-center gap-1">
-                                  <Phone className="w-3 h-3" />
-                                  {lead.phone}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="text-dark-300">
-                          {serviceTypes.find(s => s.value === lead.service_type)?.label || '-'}
-                        </span>
-                      </td>
-                      <td>
-                        <select
-                          value={lead.status}
-                          onChange={(e) => handleStatusChange(lead.id, e.target.value)}
-                          className="text-sm bg-transparent border-0 p-0 pr-6 focus:ring-0"
-                        >
-                          {statusOptions.map(opt => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="text-dark-400 text-sm">
-                        {format(new Date(lead.created_at), 'MMM d, yyyy')}
-                      </td>
-                      <td>
-                        <div className="relative">
-                          <button
-                            onClick={() => setOpenMenuId(openMenuId === lead.id ? null : lead.id)}
-                            className="p-2 hover:bg-dark-800 rounded-lg"
-                          >
-                            <MoreVertical className="w-4 h-4 text-dark-400" />
-                          </button>
-                          
-                          {openMenuId === lead.id && (
-                            <>
-                              <div 
-                                className="fixed inset-0 z-10"
-                                onClick={() => setOpenMenuId(null)}
-                              />
-                              <div className="absolute right-0 mt-1 w-48 bg-dark-800 border border-dark-700 rounded-xl shadow-xl z-20 py-1">
-                                <button
-                                  onClick={() => openEditModal(lead)}
-                                  className="w-full px-4 py-2 text-left text-sm text-dark-200 hover:bg-dark-700 flex items-center gap-2"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                  Edit
-                                </button>
-                                {lead.status !== 'converted' && (
-                                  <button
-                                    onClick={() => {
-                                      setConvertConfirm(lead);
-                                      setOpenMenuId(null);
-                                    }}
-                                    className="w-full px-4 py-2 text-left text-sm text-green-400 hover:bg-dark-700 flex items-center gap-2"
-                                  >
-                                    <UserCheck className="w-4 h-4" />
-                                    Convert to Client
-                                  </button>
-                                )}
-                                <button
-                                  onClick={() => {
-                                    setDeleteConfirm(lead);
-                                    setOpenMenuId(null);
-                                  }}
-                                  className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-dark-700 flex items-center gap-2"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Delete
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+{leads.length > 0 ? (
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    {leads.map((lead) => (
+      <div key={lead.id} className="card-hover p-5">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <Avatar name={lead.name} />
+            <div>
+              <p className="font-semibold text-white">{lead.name}</p>
+              <p className="text-sm text-dark-400">
+                {serviceTypes.find(s => s.value === lead.service_type)?.label || 'No service specified'}
+              </p>
             </div>
           </div>
-        ) : (
-          <EmptyState
-            icon={Plus}
-            title="No leads found"
-            description="Add your first lead to start tracking potential clients"
-            action={
-              <button onClick={openNewModal} className="btn-primary">
-                <Plus className="w-5 h-5" />
-                Add Lead
-              </button>
-            }
-          />
+          
+          <div className="relative">
+            <button
+              onClick={() => setOpenMenuId(openMenuId === lead.id ? null : lead.id)}
+              className="p-1 hover:bg-dark-800 rounded"
+            >
+              <MoreVertical className="w-4 h-4 text-dark-400" />
+            </button>
+            
+            {openMenuId === lead.id && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                <div className="absolute right-0 mt-1 w-40 bg-dark-800 border border-dark-700 rounded-lg shadow-xl z-20 py-1">
+                  <button
+                    onClick={() => openEditModal(lead)}
+                    className="w-full px-3 py-2 text-left text-sm text-dark-200 hover:bg-dark-700 flex items-center gap-2"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Edit
+                  </button>
+                  {lead.status !== 'converted' && (
+                    <button
+                      onClick={() => { setConvertConfirm(lead); setOpenMenuId(null); }}
+                      className="w-full px-3 py-2 text-left text-sm text-green-400 hover:bg-dark-700 flex items-center gap-2"
+                    >
+                      <UserCheck className="w-4 h-4" />
+                      Convert
+                    </button>
+                  )}
+                  <button
+                    onClick={() => { setDeleteConfirm(lead); setOpenMenuId(null); }}
+                    className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-dark-700 flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center gap-2 text-sm text-dark-400">
+            <Mail className="w-4 h-4" />
+            <span className="truncate">{lead.email}</span>
+          </div>
+          {lead.phone && (
+            <div className="flex items-center gap-2 text-sm text-dark-400">
+              <Phone className="w-4 h-4" />
+              <span>{lead.phone}</span>
+            </div>
+          )}
+        </div>
+
+        {lead.event_date && (
+          <p className="text-sm text-dark-500 mb-3">
+            Event: {format(new Date(lead.event_date), 'MMM d, yyyy')}
+          </p>
         )}
+
+        <div className="flex items-center justify-between pt-3 border-t border-dark-700">
+          <select
+            value={lead.status}
+            onChange={(e) => handleStatusChange(lead.id, e.target.value)}
+            className="text-sm bg-dark-800 border border-dark-700 rounded-lg px-2 py-1 focus:ring-brand-500"
+          >
+            {statusOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+          <span className="text-xs text-dark-500">
+            {format(new Date(lead.created_at), 'MMM d, yyyy')}
+          </span>
+        </div>
+      </div>
+    ))}
+  </div>
+) : (
+  <EmptyState
+    icon={Plus}
+    title="No leads found"
+    description="Add your first lead to start tracking potential clients"
+    action={
+      <button onClick={openNewModal} className="btn-primary">
+        <Plus className="w-5 h-5" />
+        Add Lead
+      </button>
+    }
+  />
+)}
       </div>
 
       {/* Add/Edit Modal */}
