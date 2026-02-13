@@ -395,7 +395,7 @@ export default function Invoices() {
                     {openMenuId === invoice.id && (
                       <>
                         <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                        <div className="absolute right-0 mt-1 w-48 bg-dark-800 border border-dark-700 rounded-xl shadow-xl z-20 py-1">
+                        <div className="absolute right-0 bottom-full mb-1 w-48 bg-dark-800 border border-dark-700 rounded-xl shadow-xl z-50 py-1">
                           <button
                             onClick={() => { setShowViewModal(invoice); setOpenMenuId(null); }}
                             className="w-full px-4 py-2 text-left text-sm text-dark-200 hover:bg-dark-700 flex items-center gap-2"
