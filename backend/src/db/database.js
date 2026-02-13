@@ -32,6 +32,12 @@ const initDatabase = () => {
       is_active INTEGER DEFAULT 1
     )
   `);
+  // Add notification_settings column to users if it doesn't exist
+try {
+  db.exec(`ALTER TABLE users ADD COLUMN notification_settings TEXT`);
+} catch (e) {
+  // Column already exists, ignore error
+}
 
   // Leads table (potential clients from inquiry form)
   db.exec(`

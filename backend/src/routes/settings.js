@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 
+// Test route - you can remove this later
+router.get('/test', (req, res) => {
+  res.json({ message: 'Settings route is working!' });
+});
+
 // Get business settings (admin only)
 router.get('/business', (req, res) => {
   if (req.user.role !== 'admin') {

@@ -9,28 +9,49 @@ import useAuthStore from '../../stores/authStore';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 
+import axios from 'axios';
+
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+});
+
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+const getAuthHeaders = () => ({
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${localStorage.getItem('token')}`
+});
+
+const API_BASE = 'http://localhost:5000';
+
 const api = {
-  updateProfile: (data) => fetch('/api/auth/profile', {
+  updateProfile: (data) => fetch(`${API_BASE}/api/auth/profile`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data)
   }).then(r => r.json()),
-  changePassword: (data) => fetch('/api/auth/change-password', {
+  changePassword: (data) => fetch(`${API_BASE}/api/auth/change-password`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data)
   }).then(r => r.json()),
-  updateNotificationSettings: (data) => fetch('/api/auth/notifications', {
+  updateNotificationSettings: (data) => fetch(`${API_BASE}/api/auth/notifications`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data)
   }).then(r => r.json()),
-  getBusinessSettings: () => fetch('/api/settings/business', {
-    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+  getBusinessSettings: () => fetch(`${API_BASE}/api/settings/business`, {
+    headers: getAuthHeaders()
   }).then(r => r.json()),
-  updateBusinessSettings: (data) => fetch('/api/settings/business', {
+  updateBusinessSettings: (data) => fetch(`${API_BASE}/api/settings/business`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data)
   }).then(r => r.json()),
 };
@@ -108,21 +129,32 @@ export default function Settings() {
   };
 
   const handleSaveProfile = async () => {
-    setIsSaving(true);
-    try {
-      const result = await api.updateProfile(profile);
-      if (result.error) {
-        toast.error(result.error);
-      } else {
-        setUser({ ...user, ...profile });
-        toast.success('Profile updated successfully');
-      }
-    } catch (error) {
-      toast.error('Failed to update profile');
-    } finally {
-      setIsSaving(false);
+  setIsSaving(true);
+  try {
+    const result = await api.updateProfile(profile);
+    console.log('Profile update result:', result);
+    
+    if (result && result.error) {
+      toast.error(result.error);
+    } else if (result && result.user) {
+      setUser({ ...user, ...result.user });
+      toast.success('Profile updated successfully');
+    } else if (result && result.message) {
+      // Success case - update local state
+      setUser({ ...user, ...profile });
+      toast.success(result.message || 'Profile updated successfully');
+    } else {
+      // Fallback success
+      setUser({ ...user, ...profile });
+      toast.success('Profile updated successfully');
     }
-  };
+  } catch (error) {
+    console.error('Profile update error:', error);
+    toast.error('Failed to update profile');
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   const handleChangePassword = async () => {
     if (passwordData.new_password !== passwordData.confirm_password) {

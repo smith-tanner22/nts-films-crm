@@ -51,7 +51,7 @@ app.use('/api/invoices', authenticateToken, invoiceRoutes);
 app.use('/api/calendar', authenticateToken, calendarRoutes);
 app.use('/api/insights', authenticateToken, isAdmin, insightsRoutes);
 app.use('/api/uploads', authenticateToken, uploadRoutes);
-app.use('/api/settings', authMiddleware, settingsRoutes);
+app.use('/api/settings', authenticateToken, settingsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

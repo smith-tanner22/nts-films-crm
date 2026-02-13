@@ -115,6 +115,7 @@ router.post('/login', validate([
         id: user.id,
         email: user.email,
         name: user.name,
+        phone: user.phone,
         role: user.role,
         avatar: user.avatar
       }
@@ -261,7 +262,7 @@ router.post('/forgot-password', validate([
 });
 
 // Update user profile
-router.put('/profile', (req, res) => {
+router.put('/profile', authenticateToken, (req, res) => {
   try {
     const { name, email, phone } = req.body;
     
@@ -291,7 +292,7 @@ router.put('/profile', (req, res) => {
 });
 
 // Change password
-router.post('/change-password', async (req, res) => {
+router.post('/change-password', authenticateToken, async (req, res) => {
   try {
     const { current_password, new_password } = req.body;
 
@@ -305,7 +306,6 @@ router.post('/change-password', async (req, res) => {
 
     const user = db.prepare('SELECT password FROM users WHERE id = ?').get(req.user.id);
     
-    const bcrypt = require('bcryptjs');
     const isValid = await bcrypt.compare(current_password, user.password);
     
     if (!isValid) {
@@ -324,7 +324,7 @@ router.post('/change-password', async (req, res) => {
 });
 
 // Update notification settings
-router.put('/notifications', (req, res) => {
+router.put('/notifications', authenticateToken, (req, res) => {
   try {
     const settings = req.body;
     
